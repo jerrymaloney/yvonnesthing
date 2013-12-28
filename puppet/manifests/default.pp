@@ -130,7 +130,7 @@ exec { 'autogen tesseract':
   command => '/tmp/tesseract-ocr/autogen.sh',
   creates => '/tmp/tesseract-ocr/config/ltmain.sh',
   require => [ 
-               Exec['install tesseract prereqs'],
+               Exec['install prereqs'],
                Exec['install leptonica'],
                Exec['untar tesseract'],
              ]
