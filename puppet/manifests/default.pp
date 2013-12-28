@@ -17,29 +17,29 @@ firewall { '100 allow 80':
 
 
 
-# needed for tesseract-ocr
+/*****************************************************************************
+ *****************************************************************************
+ ***                         INSTALL TESSERACT-OCR                         ***
+ ***        https://code.google.com/p/tesseract-ocr/wiki/Compiling         ***
+ *****************************************************************************
+ *****************************************************************************/
+# packages needed for tesseract-ocr and available through yum
 package { 'autoconf':
 }
-
 package { 'automake':
 }
-
 package { 'libtool':
 }
-
-package { 'libpng10-devel':  # originally libpng12-dev
+package { 'libpng10-devel':  # originally libpng12-dev -- maybe this is the cause of 'TODO: png files don't work'?
 }
-
 package { 'libjpeg-turbo-devel':  # originally libjpeg62-dev
 }
-
 package { 'libtiff-devel':  # originally libtiff4-dev
 }
-
 package { 'zlib-devel':  # originally zlib1g-dev
 }
-
 exec { 'install prereqs':
+  # this is just a noop wrapper to make dependency management clearer
   command => '/bin/echo "tesseract prereqs installed through package manager"',
   require => [ 
                Package['autoconf'],
@@ -52,7 +52,11 @@ exec { 'install prereqs':
              ]
 }
 
-# compile leptonica
+/*****************************************************************************
+ * COMPILE LEPTONICA                                                         *
+ * This is a dependency of tesseract and is not available through yum.       *
+ * http://www.leptonica.org/source/README.html                               *
+ *****************************************************************************/
 exec { "retrieve leptonica":
   cwd     => "/tmp",
   command => "/usr/bin/wget http://www.leptonica.org/source/leptonica-1.69.tar.gz -O /tmp/leptonica-1.69.tar.gz",
@@ -87,7 +91,9 @@ exec { 'install leptonica':
 }
 
 
-# compile tesseract
+/*****************************************************************************
+ * COMPILE TESSERACT                                                         *
+ *****************************************************************************/
 exec { "retrieve tesseract":
   cwd     => "/tmp",
   command => "/usr/bin/wget https://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.02.tar.gz -O /tmp/tesseract-ocr-3.02.02.tar.gz",
@@ -134,7 +140,12 @@ exec { 'ldconfig tesseract':
   require => Exec['install tesseract'],
 }
 
-# get language data
+/*****************************************************************************
+ * GET LANGUAGE DATA                                                         *
+ * This is the trained model that will enable us to run OCR with no training *
+ * of our own.                                                               *
+ * https://code.google.com/p/tesseract-ocr/wiki/Compiling#Language_Data      *
+ *****************************************************************************/
 exec { "retrieve language data":
   cwd     => "/tmp",
   command => "/usr/bin/wget http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.eng.tar.gz -O /tmp/tesseract-ocr-3.02.eng.tar.gz",
@@ -150,7 +161,10 @@ exec { 'install language data':
 }
 
 
-# test that tesseract is working correctly
+/*****************************************************************************
+ * TEST TESSERACT                                                            *
+ * Test that tesseract is working correctly by running OCR on a few things.  *
+ *****************************************************************************/
 exec { "retrieve jpg image of text":
   cwd     => "/tmp",
   command => "/usr/bin/wget http://upload.wikimedia.org/wikipedia/commons/5/5f/Dr._Jekyll_and_Mr._Hyde_Text.jpg -O /tmp/jekyll.jpg",
