@@ -64,7 +64,7 @@ package { 'libtiff-devel':  # originally libtiff4-dev
 package { 'zlib-devel':  # originally zlib1g-dev
 }
 
-exec { 'install tesseract prereqs':
+exec { 'install prereqs':
   command => '/bin/echo "tesseract prereqs installed through package manager"',
   require => [ 
                Package['autoconf'],
@@ -95,7 +95,7 @@ exec { 'configure leptonica':
   command => '/tmp/leptonica-1.69/configure',
   require => [ 
                Exec['untar leptonica'],
-               Exec['install tesseract prereqs'],
+               Exec['install prereqs'],
              ]
 }
 exec { 'make leptonica':
@@ -160,18 +160,18 @@ exec { 'ldconfig tesseract':
 }
 
 # get language data
-exec { "retrieve langauge data":
+exec { "retrieve language data":
   cwd     => "/tmp",
   command => "/usr/bin/wget http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.eng.tar.gz -O /tmp/tesseract-ocr-3.02.eng.tar.gz",
   creates => "/tmp/tesseract-ocr-3.02.eng.tar.gz",
   timeout => 3600,
   require => Exec['install tesseract'],
 }
-exec { 'install langauge data':
+exec { 'install language data':
   cwd     => "/tmp",
   command => "/bin/tar xzf /tmp/tesseract-ocr-3.02.eng.tar.gz -C /usr/local/share/tessdata/  --strip-components 2",  # strip-components removes the 'tesseract-ocr/tessdata/' from the path inside the tar file
   creates => "/usr/local/share/tessdata/eng.cube.bigrams",
-  require => Exec['retrieve langauge data'],
+  require => Exec['retrieve language data'],
 }
 
 
@@ -181,7 +181,7 @@ exec { "retrieve jpg image of text":
   command => "/usr/bin/wget http://upload.wikimedia.org/wikipedia/commons/5/5f/Dr._Jekyll_and_Mr._Hyde_Text.jpg -O /tmp/jekyll.jpg",
   creates => "/tmp/jekyll.jpg",
   timeout => 3600,
-  #require => Exec['install langauge data'],
+  require => Exec['install language data'],
 }
 exec { "run ocr on jpg image of text":
   cwd     => "/tmp",
@@ -205,7 +205,7 @@ exec { "retrieve tiff image of text":
   command => "/usr/bin/wget https://sites.google.com/site/cff2doc/phototest.tif -O /tmp/lazydog.tiff",
   creates => "/tmp/lazydog.tiff",
   timeout => 3600,
-  #require => Exec['install langauge data'],
+  require => Exec['install language data'],
 }
 exec { "run ocr on tiff image of text":
   cwd     => "/tmp",
@@ -230,7 +230,7 @@ exec { "compare tiff ocr run with golden":
 #  command => "/usr/bin/wget http://upload.wikimedia.org/wikipedia/commons/7/75/Dan%27l_Druce%2C_Blacksmith_-_Illustrated_London_News%2C_November_18%2C_1876_-_text.png -O /tmp/druce.png",
 #  creates => "/tmp/druce.png",
 #  timeout => 3600,
-#  #require => Exec['install langauge data'],
+#  require => Exec['install language data'],
 #}
 #exec { "run ocr on png image of text":
 #  cwd     => "/tmp",
