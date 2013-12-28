@@ -61,7 +61,7 @@ exec { "retrieve leptonica":
   cwd     => "/tmp",
   command => "/usr/bin/wget http://www.leptonica.org/source/leptonica-1.69.tar.gz -O /tmp/leptonica-1.69.tar.gz",
   creates => "/tmp/leptonica-1.69.tar.gz",
-  timeout => 3600,
+  timeout => 600,
 }
 exec { 'untar leptonica':
   cwd     => "/tmp",
@@ -82,6 +82,7 @@ exec { 'make leptonica':
   command => '/usr/bin/make',
   creates => '/tmp/leptonica-1.69/src/adaptmap.o',
   require => Exec['configure leptonica'],
+  timeout => 900,
 }
 exec { 'install leptonica':
   cwd     => '/tmp/leptonica-1.69',
@@ -98,7 +99,7 @@ exec { "retrieve tesseract":
   cwd     => "/tmp",
   command => "/usr/bin/wget https://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.02.tar.gz -O /tmp/tesseract-ocr-3.02.02.tar.gz",
   creates => "/tmp/tesseract-ocr-3.02.02.tar.gz",
-  timeout => 3600,
+  timeout => 600,
 }
 exec { 'untar tesseract':
   cwd     => "/tmp",
@@ -127,6 +128,7 @@ exec { 'make tesseract':
   command => '/usr/bin/make',
   creates => '/tmp/tesseract-ocr/ccmain/adaptations.o',
   require => Exec['configure tesseract'],
+  timeout => 900,
 }
 exec { 'install tesseract':
   cwd     => '/tmp/tesseract-ocr',
@@ -150,7 +152,7 @@ exec { "retrieve language data":
   cwd     => "/tmp",
   command => "/usr/bin/wget http://tesseract-ocr.googlecode.com/files/tesseract-ocr-3.02.eng.tar.gz -O /tmp/tesseract-ocr-3.02.eng.tar.gz",
   creates => "/tmp/tesseract-ocr-3.02.eng.tar.gz",
-  timeout => 3600,
+  timeout => 600,
   require => Exec['install tesseract'],
 }
 exec { 'install language data':
@@ -169,14 +171,14 @@ exec { "retrieve jpg image of text":
   cwd     => "/tmp",
   command => "/usr/bin/wget http://upload.wikimedia.org/wikipedia/commons/5/5f/Dr._Jekyll_and_Mr._Hyde_Text.jpg -O /tmp/jekyll.jpg",
   creates => "/tmp/jekyll.jpg",
-  timeout => 3600,
+  timeout => 15,
   require => Exec['install language data'],
 }
 exec { "run ocr on jpg image of text":
   cwd     => "/tmp",
   command => "/usr/local/bin/tesseract /tmp/jekyll.jpg /tmp/jekyll",
   creates => "/tmp/jekyll.txt",
-  timeout => 3600,
+  timeout => 60,
   require => Exec['retrieve jpg image of text'],
 }
 file { '/tmp/jekyll-correct.txt':
@@ -193,14 +195,14 @@ exec { "retrieve tiff image of text":
   cwd     => "/tmp",
   command => "/usr/bin/wget https://sites.google.com/site/cff2doc/phototest.tif -O /tmp/lazydog.tiff",
   creates => "/tmp/lazydog.tiff",
-  timeout => 3600,
+  timeout => 15,
   require => Exec['install language data'],
 }
 exec { "run ocr on tiff image of text":
   cwd     => "/tmp",
   command => "/usr/local/bin/tesseract /tmp/lazydog.tiff /tmp/lazydog",
   creates => "/tmp/lazydog.txt",
-  timeout => 3600,
+  timeout => 60,
   require => Exec['retrieve tiff image of text'],
 }
 file { '/tmp/lazydog-correct.txt':
@@ -218,14 +220,14 @@ exec { "compare tiff ocr run with golden":
 #  cwd     => "/tmp",
 #  command => "/usr/bin/wget http://upload.wikimedia.org/wikipedia/commons/7/75/Dan%27l_Druce%2C_Blacksmith_-_Illustrated_London_News%2C_November_18%2C_1876_-_text.png -O /tmp/druce.png",
 #  creates => "/tmp/druce.png",
-#  timeout => 3600,
+#  timeout => 15,
 #  require => Exec['install language data'],
 #}
 #exec { "run ocr on png image of text":
 #  cwd     => "/tmp",
 #  command => "/usr/local/bin/tesseract /tmp/druce.png /tmp/druce",
 #  creates => "/tmp/druce.txt",
-#  timeout => 3600,
+#  timeout => 60,
 #  require => Exec['retrieve png image of text'],
 #}
 #file { '/tmp/druce-correct.txt':
