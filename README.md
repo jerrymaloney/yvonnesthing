@@ -11,6 +11,4 @@ WHAT IS THIS?
 
 
 BUILD:
-$ git clone git@github.com:jerrymaloney/yvonnesthing.git
-$ cd yvonnesthing
-$ ./bootstrap.sh
+$ git clone git@github.com:jerrymaloney/yvonnesthing.git; cd yvonnesthing; ./bootstrap.sh
